@@ -1,28 +1,25 @@
-def split_binary(s, max_len=3):
-    def backtrack(start, current):
-        if start == len(s):
-            result.append(current[:])
-            return
+from typing import List, Set
+def split_binary(s: str, max_len: int = 3) -> List[List[str]]:
+    n = len(s)
+    dp = [[] for _ in range(n + 1)]
+    dp[n] = [[]] 
+    for i in range(n - 1, -1, -1):
+        for length in range(1, min(max_len + 1, n - i + 1)):
+            substring = s[i:i + length]
+            for rest in dp[i + length]:
+                dp[i].append([substring] + rest)
+    return dp[0]
 
-        for length in range(1, min(max_len + 1, len(s) - start + 1)):
-            current.append(s[start:start + length])
-            backtrack(start + length, current)
-            current.pop()
-
-    result = []
-    backtrack(0, [])
-    return result
-
-def has_prefix_in_array(arr):
-    for i in range(len(arr)):
-        for j in range(len(arr)):
-            if i != j and arr[j].startswith(arr[i]) and arr[i] != arr[j]:
+def has_prefix_in_array(arr: List[str]) -> bool:
+    arr_set = set(arr)
+    for s in arr:
+        for i in range(1, len(s)):
+            if s[:i] in arr_set:
                 return True
     return False
 
-def filter_splits(splits):
-    return [split for split in splits if not has_prefix_in_array(split)]
-
+def filter_valid_splits(splits: List[List[str]]) -> List[Set[str]]:
+    return [set(split) for split in splits if not has_prefix_in_array(split)]
 def validate_input():
     user_input = input("")
     if not all(char in {'0', '1'} for char in user_input):
@@ -39,7 +36,7 @@ def calculate_x(n):
 input_string = validate_input()
 
 all_splits = split_binary(input_string)
-valid_splits = filter_splits(all_splits)
+valid_splits = filter_valid_splits(all_splits)
 valid_splits = [set(split) for split in valid_splits]
 
 lengths = [len(item) for item in valid_splits]

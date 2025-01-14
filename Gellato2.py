@@ -3,15 +3,14 @@ def SplitBinary(s, max_len=3):
         if start == len(s):
             result.append(Current[:])
             return
-        
         for length in range(1, min(max_len + 1, len(s) - start + 1)):
             substring = s[start:start + length]
             Current.append(substring)
             backtrack(start + length, Current)
             Current.pop()
-    
     result = []
     backtrack(0, [])
+    print(result)
     return result
 
 def hasPrefixInArray(arr):
