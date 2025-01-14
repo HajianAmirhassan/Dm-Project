@@ -1,3 +1,17 @@
+from typing import List, Set
+
+def validate_input():
+    user_input = input("")
+    if not all(char in {'0', '1'} for char in user_input):
+        print("Invalid input.")
+        return validate_input()
+    return user_input
+
+def calculate_x(n):
+    result = 1
+    for i in range(n):
+        result *= (26 - i)
+    return result if n > 0 else 0
 def can_construct_dp(binary_string, string_array):
     dp = [False] * (len(binary_string) + 1)
     dp[0] = True  # Empty string can always be constructed
@@ -52,19 +66,26 @@ def generate_huffman_codes(max_digits=3):
         for combo in possible_combinations:
             if is_prefix_free(combo):
                 valid_combinations.append(set(combo))
+    
     return valid_combinations
 
 def FindPossibleHoffmanSets(T):
     result = [{'0','1'}]
     prefix_free_sets = generate_huffman_codes(3)
-    prefix_free_sets.append({'001'})
-    print({'010'}in prefix_free_sets)
-    print(len(prefix_free_sets))
+    missed = [{'000'},{'001'},{'010'},{'011'},{'100'},{'101'},{'110'},{'111'}]
+    prefix_free_sets.extend(missed)
     prefix_free_sets.pop(0)
     for set in prefix_free_sets:
         if can_construct_dp(T, list(set)):
             result.append(set)
-    print(result)
+    return result
+input_string = validate_input()
 
-T = "001"
-FindPossibleHoffmanSets(T)
+valid_splits = FindPossibleHoffmanSets(input_string)
+valid_splits = [set(split) for split in valid_splits]
+
+lengths = [len(item) for item in valid_splits]
+total_sum = sum(calculate_x(length) for length in lengths)
+
+print(len(lengths))
+print(total_sum)
