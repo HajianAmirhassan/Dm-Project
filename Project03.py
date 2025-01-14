@@ -1,5 +1,3 @@
-from typing import List, Set
-
 def validate_input():
     user_input = input("")
     if not all(char in {'0', '1'} for char in user_input):
@@ -14,25 +12,28 @@ def calculate_x(n):
     return result if n > 0 else 0
 def can_construct_dp(binary_string, string_array):
     dp = [False] * (len(binary_string) + 1)
-    dp[0] = True  # Empty string can always be constructed
-
-    # Tracking usage of words in string_array
+    dp[0] = True  
     used_words = [set() for _ in range(len(binary_string) + 1)]
-
     for i in range(1, len(binary_string) + 1):
         for word in string_array:
             if i >= len(word) and binary_string[i - len(word):i] == word and dp[i - len(word)]:
                 dp[i] = True
                 used_words[i] = used_words[i - len(word)].copy()
                 used_words[i].add(word)
-
-    # Check if the final construction includes all words
     return dp[-1] and set(string_array).issubset(used_words[-1])
 
+def generate_binary_strings(max_length):
+    result = []
+    for length in range(1, max_length + 1):
+        for i in range(2 ** length):
+            binary = bin(i)[2:].zfill(length)
+            result.append(binary)
+    return result
+
 def is_prefix_free(codes):
-    for i in range(len(codes)):
-        for j in range(len(codes)):
-            if i != j and codes[i].startswith(codes[j]):
+    for code1 in codes:
+        for code2 in codes:
+            if code1 != code2 and (code1.startswith(code2) or code2.startswith(code1)):
                 return False
     return True
 
@@ -44,37 +45,27 @@ def generate_binary_strings(max_length):
             result.append(binary)
     return result
 
-def generate_combinations(arr, size):
-    def backtrack(start, current_combination):
-        if len(current_combination) == size:
-            result.append(current_combination[:])
-            return
-        
-        for i in range(start, len(arr)):
-            current_combination.append(arr[i])
-            backtrack(i + 1, current_combination)
-            current_combination.pop()
-    result = []
-    backtrack(0, [])
-    return result
+def get_all_subsets(arr):
+    n = len(arr)
+    subsets = []
+    for i in range(2 ** n):
+        subset = set()
+        for j in range(n):
+            if (i & (1 << j)):
+                subset.add(arr[j])
+        if len(subset) > 0:
+            subsets.append(subset)
+    return subsets
 
 def generate_huffman_codes(max_digits=3):
     binary_strings = generate_binary_strings(max_digits)
-    valid_combinations = []
-    for set_size in range(2, len(binary_strings) + 1):
-        possible_combinations = generate_combinations(binary_strings, set_size)
-        for combo in possible_combinations:
-            if is_prefix_free(combo):
-                valid_combinations.append(set(combo))
-    
-    return valid_combinations
+    all_subsets = get_all_subsets(binary_strings)
+    valid_combinations = [subset for subset in all_subsets if is_prefix_free(subset)]
+    return sorted(valid_combinations, key=lambda x: (len(x), sorted(x)))
 
 def FindPossibleHoffmanSets(T):
-    result = [{'0','1'}]
+    result = []
     prefix_free_sets = generate_huffman_codes(3)
-    missed = [{'000'},{'001'},{'010'},{'011'},{'100'},{'101'},{'110'},{'111'}]
-    prefix_free_sets.extend(missed)
-    prefix_free_sets.pop(0)
     for set in prefix_free_sets:
         if can_construct_dp(T, list(set)):
             result.append(set)
