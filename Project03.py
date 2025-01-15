@@ -73,10 +73,11 @@ def FindPossibleHoffmanSets(T):
 input_string = validate_input()
 
 valid_splits = FindPossibleHoffmanSets(input_string)
-valid_splits = [set(split) for split in valid_splits]
+print(valid_splits)
 
 lengths = [len(item) for item in valid_splits]
+print(lengths)
 total_sum = sum(calculate_x(length) for length in lengths)
 
 print(len(lengths))
-print(total_sum)
+print(total_sum%1000000007)
